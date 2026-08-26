@@ -75,6 +75,7 @@ const PROJECTS: Project[] = [
     description: `Büyük işletmelerin iç iletişim ve mesai ihtiyaçlarını çözen, hazır framework kullanmadan sıfırdan geliştirdiğim full stack SaaS ürünüm Intra'yı tamamladım. Performans için HTTP isteklerini PHP (REST API) ile yönetirken, anlık mesajlaşmayı sıfır gecikmeli Node.js ve WebSocket sunucusuyla kurguladım. Bir personel sistemde pasife alındığında, açık olan WebSocket bağlantısını milisaniyeler içinde sunucudan kesen dinamik bir altyapı. Admin girişleri zamanlama saldırılarına karşı hash_equals ile doğrulanır. Kimlik taklidini engelleyen, personele özel benzersiz giriş kodları ve admin panelinden mesai kayıtlarını Excel'e aktarma seçeneği. Arayüz ve mesai manipülasyonlarını engellemek için cihaz saatini yok sayarak tüm giriş/çıkış kayıtlarını tamamen sunucu saatine endeksledim, yetkilendirmeleri de sunucu tarafında çift katmanlı doğrulattım. Geçmiş kayıtların İK raporları için korunması ve bir mobil uygulama gibi çalışan tam ekran PWA deneyimi sundum.`,
     year: '2026',
     tags: ['PHP', 'Node.js', 'WebSocket (ws)', 'MySQL', 'REST API', 'JavaScript', 'PWA'],
+    image: '/projects/Intra.jpeg',
   },
   {
     title: 'GasOil — Kurumsal Web Sitesi',
@@ -83,6 +84,7 @@ const PROJECTS: Project[] = [
     year: '2025',
     tags: ['HTML', 'CSS', 'JavaScript', 'React'],
     liveUrl: 'https://gasoil.com.tr',
+    image: '/projects/gasoil.jpeg',
   },
   {
     title: 'B2B Ağtaşlar Group — Kurumsal Çözüm Sitesi',
@@ -91,6 +93,7 @@ const PROJECTS: Project[] = [
     year: '2025',
     tags: ['HTML', 'CSS', 'JavaScript', 'React'],
     liveUrl: 'https://b2bagtaslargroup.com',
+    image: '/projects/B2B_AGTASLAR.jpeg',
   },
   {
     title: 'Flock — Sosyal Medya Platformu',
@@ -99,6 +102,7 @@ const PROJECTS: Project[] = [
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'React Router', 'Vite', 'Resend', 'Vercel'],
     githubUrl: 'https://github.com/ozgegumus1',
     liveUrl: 'https://flocksocial.vercel.app',
+    image: '/projects/Flock.jpeg',
   },
   {
     title: 'Vesta PMS — Otel Yönetim Paneli',
@@ -108,6 +112,7 @@ const PROJECTS: Project[] = [
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite'],
     githubUrl: 'https://github.com/ozgegumus1/vesta-pms',
     liveUrl: 'https://vesta-pms.vercel.app',
+    image: '/projects/VestaPMS.jpeg',
   },
   {
     title: 'LineSpine — Ürün & Hizmet Tanıtım Sitesi',
@@ -116,6 +121,7 @@ const PROJECTS: Project[] = [
     year: '2025',
     tags: ['HTML', 'CSS', 'JavaScript', 'React'],
     liveUrl: 'https://linespine.com',
+    image: '/projects/Linespine.jpeg',
   },
   {
     title: 'Inkwell — Etkileşimli Kitap Sitesi',
@@ -124,14 +130,17 @@ const PROJECTS: Project[] = [
     year: '2026',
     tags: [],
     liveUrl: 'https://bookieweb.vercel.app/',
+    image: '/projects/Inkwell.JPG',
   },
   {
-    title: 'ORIGIN — WebGL Deneyim Sitesi',
+    title: 'NOIR Detailing — Oto Kaplama & Detaylandırma Stüdyosu',
     description:
-      'Kaydırmayla yönetilen bir WebGL deneyimi. Sayfayı aşağı kaydırdıkça binlerce parçacık sırayla galaksi, küre, torus düğümü ve dalga gibi farklı şekillere dönüşüyor; kamera açısı ve renkler de bu dönüşüme eşlik ediyor. Three.js ile yapılmış, tek sayfalık interaktif bir görsel yolculuk.',
+      'Araç sahiplerine PPF (boya koruma filmi), seramik kaplama ve profesyonel detaylandırma hizmetleri sunan bir oto bakım stüdyosu için tasarladığım karanlık ve zarif bir marka sitesi. Hizmetleri net bir akışla anlatırken, markanın premium ve sinematik kimliğini yansıtan görseller ve sade bir tipografiyle ziyaretçide güven uyandıran bir izlenim hedefledim.',
     year: '2026',
-    tags: ['Three.js', 'JavaScript', 'WebGL'],
-    liveUrl: 'https://webimmersive.vercel.app',
+    tags: ['HTML', 'CSS', 'JavaScript', 'React'],
+    githubUrl: 'https://github.com/ozgegumus1/NOIRDETAILING.git',
+    liveUrl: 'https://noirgarage.vercel.app/',
+    image: '/projects/NOIR.jpg',
   },
 ];
 
@@ -525,15 +534,8 @@ const ProjectModal: React.FC<{
           ✕
         </button>
 
-        <ImagePlaceholder
-          image={project.image}
-          alt={project.title}
-          isDarkMode={isDarkMode}
-          className="mb-6 h-44 w-full sm:h-52"
-        />
-
         {project.year && (
-          <span className="mb-2 block text-xs font-medium uppercase tracking-[0.2em] text-[#9A5B32]">
+          <span className="mb-2 mt-8 block text-xs font-medium uppercase tracking-[0.2em] text-[#9A5B32]">
             {project.year}
           </span>
         )}
