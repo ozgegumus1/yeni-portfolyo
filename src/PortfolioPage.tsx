@@ -839,7 +839,7 @@ const PortfolioPage: React.FC = () => {
       {/* ---------------------------------------------------------- */}
       <footer className="relative px-6 py-8 text-center">
         <p className={`text-xs ${isDarkMode ? 'text-zinc-600' : 'text-zinc-400'}`}>
-          © 2025 Özge Gümüş. Tüm hakları saklıdır.
+          ©  2025 Özge Gümüş. Tüm hakları saklıdır.
         </p>
       </footer>
     </div>
