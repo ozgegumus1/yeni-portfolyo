@@ -23,12 +23,25 @@ interface Project {
   liveUrl?: string;
   /** Kartın kendisini dolduran tek görsel. Boş bırakırsan placeholder görünür. */
   image?: string;
+  /**
+   * Görselin doğal oranına göre kart kutusunun şekli. Yatay ekran görüntüleri
+   * için 'landscape', dikey/poster görseller için 'portrait' ya da 'tall' seç —
+   * kutuyu görselin gerçek oranına yaklaştırır, object-cover'ın önemli kısımları
+   * kırpmasını engeller. Varsayılan: 'portrait'.
+   */
+  aspect?: 'landscape' | 'portrait' | 'tall';
 }
 
 interface Vec2 {
   x: number;
   y: number;
 }
+
+const ASPECT_CLASS: Record<NonNullable<Project['aspect']>, string> = {
+  landscape: 'aspect-video', // ~16/9 — ekran görüntüsü / masaüstü site tanıtımları
+  portrait: 'aspect-[2/3]', // ~0.67 — poster tarzı dikey görseller
+  tall: 'aspect-[4/5]', // hafif dikey, kitap/karakter görselleri
+};
 
 /* ================================================================== */
 /*  Content — gerçek verilerin. Buraya proje eklemen yeterli, sağdaki  */
@@ -75,7 +88,8 @@ const PROJECTS: Project[] = [
     description: `Büyük işletmelerin iç iletişim ve mesai ihtiyaçlarını çözen, hazır framework kullanmadan sıfırdan geliştirdiğim full stack SaaS ürünüm Intra'yı tamamladım. Performans için HTTP isteklerini PHP (REST API) ile yönetirken, anlık mesajlaşmayı sıfır gecikmeli Node.js ve WebSocket sunucusuyla kurguladım. Bir personel sistemde pasife alındığında, açık olan WebSocket bağlantısını milisaniyeler içinde sunucudan kesen dinamik bir altyapı. Admin girişleri zamanlama saldırılarına karşı hash_equals ile doğrulanır. Kimlik taklidini engelleyen, personele özel benzersiz giriş kodları ve admin panelinden mesai kayıtlarını Excel'e aktarma seçeneği. Arayüz ve mesai manipülasyonlarını engellemek için cihaz saatini yok sayarak tüm giriş/çıkış kayıtlarını tamamen sunucu saatine endeksledim, yetkilendirmeleri de sunucu tarafında çift katmanlı doğrulattım. Geçmiş kayıtların İK raporları için korunması ve bir mobil uygulama gibi çalışan tam ekran PWA deneyimi sundum.`,
     year: '2026',
     tags: ['PHP', 'Node.js', 'WebSocket (ws)', 'MySQL', 'REST API', 'JavaScript', 'PWA'],
-    image: '/projects/Intra.jpeg',
+    image: '/projects/Intra.jpg',
+    aspect: 'landscape',
   },
   {
     title: 'GasOil — Kurumsal Web Sitesi',
@@ -84,7 +98,8 @@ const PROJECTS: Project[] = [
     year: '2025',
     tags: ['HTML', 'CSS', 'JavaScript', 'React'],
     liveUrl: 'https://gasoil.com.tr',
-    image: '/projects/gasoil.jpeg',
+    image: '/projects/gasoil.jpg',
+    aspect: 'landscape',
   },
   {
     title: 'B2B Ağtaşlar Group — Kurumsal Çözüm Sitesi',
@@ -93,7 +108,8 @@ const PROJECTS: Project[] = [
     year: '2025',
     tags: ['HTML', 'CSS', 'JavaScript', 'React'],
     liveUrl: 'https://b2bagtaslargroup.com',
-    image: '/projects/B2B_AGTASLAR.jpeg',
+    image: '/projects/B2B_AGTASLAR.jpg',
+    aspect: 'portrait',
   },
   {
     title: 'Flock — Sosyal Medya Platformu',
@@ -102,7 +118,8 @@ const PROJECTS: Project[] = [
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Supabase', 'React Router', 'Vite', 'Resend', 'Vercel'],
     githubUrl: 'https://github.com/ozgegumus1',
     liveUrl: 'https://flocksocial.vercel.app',
-    image: '/projects/Flock.jpeg',
+    image: '/projects/Flock.jpg',
+    aspect: 'portrait',
   },
   {
     title: 'Vesta PMS — Otel Yönetim Paneli',
@@ -112,7 +129,8 @@ const PROJECTS: Project[] = [
     tags: ['React', 'TypeScript', 'Tailwind CSS', 'Vite'],
     githubUrl: 'https://github.com/ozgegumus1/vesta-pms',
     liveUrl: 'https://vesta-pms.vercel.app',
-    image: '/projects/VestaPMS.jpeg',
+    image: '/projects/VestaPMS.jpg',
+    aspect: 'landscape',
   },
   {
     title: 'LineSpine — Ürün & Hizmet Tanıtım Sitesi',
@@ -121,7 +139,8 @@ const PROJECTS: Project[] = [
     year: '2025',
     tags: ['HTML', 'CSS', 'JavaScript', 'React'],
     liveUrl: 'https://linespine.com',
-    image: '/projects/Linespine.jpeg',
+    image: '/projects/Linespine.jpg',
+    aspect: 'portrait',
   },
   {
     title: 'Inkwell — Etkileşimli Kitap Sitesi',
@@ -130,7 +149,8 @@ const PROJECTS: Project[] = [
     year: '2026',
     tags: [],
     liveUrl: 'https://bookieweb.vercel.app/',
-    image: '/projects/Inkwell.JPG',
+    image: '/projects/Inkwell.jpg',
+    aspect: 'tall',
   },
   {
     title: 'NOIR Detailing — Oto Kaplama & Detaylandırma Stüdyosu',
@@ -141,6 +161,7 @@ const PROJECTS: Project[] = [
     githubUrl: 'https://github.com/ozgegumus1/NOIRDETAILING.git',
     liveUrl: 'https://noirgarage.vercel.app/',
     image: '/projects/NOIR.jpg',
+    aspect: 'tall',
   },
 ];
 
@@ -148,9 +169,26 @@ const PROJECTS: Project[] = [
 const SPARKLE_COLORS = ['#8B5A2B', '#9A5B32', '#78350F', '#A9744F', '#6B4423'];
 
 // Asimetrik "havada asılı" hissi için kart başına sabit dikey ofset ve dinlenme açısı.
-// Kaç proje eklersen ekle, dizinin başına döner (mod alma) — hep düzensiz görünür.
-const HANG_OFFSETS = [0, 64, -32, 96, -48, 24, 72, -20, 48, -64];
+// Sadece masaüstünde uygulanır — mobilde tek sütuna düşünce dev boşluklar yaratmasın diye kapatılır.
+const HANG_OFFSETS = [0, 56, -28, 76, -40, 20, 60, -18, 40, -50];
 const REST_ROTATIONS = [-3, 2.5, -1.5, 3, -2, 1.5, -2.5, 2, -1, 3.5];
+
+/* ================================================================== */
+/*  Ekran genişliğini takip eden küçük hook — masaüstü/mobil ayrımı    */
+/*  için (asimetrik asılma efekti sadece masaüstünde uygulanır).       */
+/* ================================================================== */
+
+function useIsDesktop(): boolean {
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+  return isDesktop;
+}
 
 /* ================================================================== */
 /*  Click Sparkle / Particle Canvas                                    */
@@ -340,14 +378,21 @@ const ImagePlaceholder: React.FC<{
   isDarkMode: boolean;
   className?: string;
   rounded?: boolean;
-}> = ({ image, alt, isDarkMode, className = '', rounded = true }) => (
+  eager?: boolean;
+}> = ({ image, alt, isDarkMode, className = '', rounded = true, eager = false }) => (
   <div
     className={`flex items-center justify-center overflow-hidden border border-dashed ${
       rounded ? 'rounded-xl' : ''
     } ${isDarkMode ? 'border-[#8B5A2B]/25 bg-white/[0.03]' : 'border-[#9A5B32]/35 bg-[#F3E9DD]/60'} ${className}`}
   >
     {image ? (
-      <img src={image} alt={alt} className="h-full w-full object-cover" />
+      <img
+        src={image}
+        alt={alt}
+        loading={eager ? 'eager' : 'lazy'}
+        decoding="async"
+        className="h-full w-full object-cover"
+      />
     ) : (
       <div className="flex flex-col items-center gap-2 px-3 text-center">
         <svg
@@ -371,6 +416,10 @@ const ImagePlaceholder: React.FC<{
 
 /* ================================================================== */
 /*  Free-floating, sharp-edged, leaf-sway project card (image only)    */
+/*  Performans notu: tilt + salınım React state'i DEĞİL, doğrudan DOM  */
+/*  üzerinde (ref ile) güncelleniyor — her mousemove'da yeniden render */
+/*  tetiklenmiyor, bu yüzden hem masaüstünde anında tepki veriyor hem  */
+/*  de mobilde gereksiz yeniden çizim maliyeti oluşturmuyor.           */
 /* ================================================================== */
 
 const FloatingProjectCard: React.FC<{
@@ -379,29 +428,55 @@ const FloatingProjectCard: React.FC<{
   parallax: Vec2;
   isDarkMode: boolean;
   onOpen: (project: Project) => void;
-}> = ({ project, index, parallax, isDarkMode, onOpen }) => {
+  compactHang: boolean;
+}> = ({ project, index, parallax, isDarkMode, onOpen, compactHang }) => {
   const cardRef = useRef<HTMLDivElement | null>(null);
-  const [tilt, setTilt] = useState<Vec2>({ x: 0, y: 0 });
+  const glowRef = useRef<HTMLDivElement | null>(null);
   const [hovering, setHovering] = useState(false);
-  const [swayAngle, setSwayAngle] = useState(0);
-  const swayRafRef = useRef<number>(0);
 
-  // Rüzgarda sallanan yaprak hissi: sadece imleç/parmak yaklaşınca başlayan salınım.
+  const tiltRef = useRef<Vec2>({ x: 0, y: 0 });
+  const swayRef = useRef(0);
+  const swayRafRef = useRef<number>(0);
+  const scaleRef = useRef(1);
+
+  const depth = (index % 3) + 1;
+  const hangOffset = compactHang ? 0 : HANG_OFFSETS[index % HANG_OFFSETS.length];
+  const restRotation = compactHang ? 0 : REST_ROTATIONS[index % REST_ROTATIONS.length];
+
+  const applyTransform = () => {
+    const card = cardRef.current;
+    if (!card) return;
+    const parallaxX = parallax.x * 10 * depth;
+    const parallaxY = parallax.y * 10 * depth;
+    card.style.transform = `perspective(1000px) translate3d(${parallaxX}px, ${parallaxY}px, 0) rotateX(${tiltRef.current.x}deg) rotateY(${tiltRef.current.y}deg) rotateZ(${restRotation + swayRef.current}deg) scale(${scaleRef.current})`;
+  };
+
+  // Panel geneli parallax (üst bileşenden gelen prop) her değiştiğinde transformu tazele.
   useEffect(() => {
-    if (!hovering) {
-      cancelAnimationFrame(swayRafRef.current);
-      setSwayAngle(0);
-      return;
-    }
+    applyTransform();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parallax.x, parallax.y, compactHang]);
+
+  useEffect(() => {
+    applyTransform();
+    return () => cancelAnimationFrame(swayRafRef.current);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const startSway = () => {
     const start = performance.now();
     const loop = (t: number) => {
-      const elapsed = t - start;
-      setSwayAngle(Math.sin(elapsed / 260) * 6);
+      swayRef.current = Math.sin((t - start) / 260) * 6;
+      applyTransform();
       swayRafRef.current = requestAnimationFrame(loop);
     };
     swayRafRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(swayRafRef.current);
-  }, [hovering]);
+  };
+
+  const stopSway = () => {
+    cancelAnimationFrame(swayRafRef.current);
+    swayRef.current = 0;
+  };
 
   const updateTiltFromPoint = (clientX: number, clientY: number) => {
     const card = cardRef.current;
@@ -409,7 +484,8 @@ const FloatingProjectCard: React.FC<{
     const rect = card.getBoundingClientRect();
     const px = (clientX - rect.left) / rect.width - 0.5;
     const py = (clientY - rect.top) / rect.height - 0.5;
-    setTilt({ x: py * -22, y: px * 22 });
+    tiltRef.current = { x: py * -22, y: px * 22 };
+    applyTransform();
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) =>
@@ -420,25 +496,34 @@ const FloatingProjectCard: React.FC<{
     if (touch) updateTiltFromPoint(touch.clientX, touch.clientY);
   };
 
-  const resetTilt = () => {
-    setTilt({ x: 0, y: 0 });
-    setHovering(false);
+  const handleEnter = () => {
+    setHovering(true);
+    scaleRef.current = 1.06;
+    if (cardRef.current) cardRef.current.style.transition = 'transform 90ms linear';
+    startSway();
+    applyTransform();
   };
 
-  const depth = (index % 3) + 1;
-  const parallaxX = parallax.x * 10 * depth;
-  const parallaxY = parallax.y * 10 * depth;
-  const hangOffset = HANG_OFFSETS[index % HANG_OFFSETS.length];
-  const restRotation = REST_ROTATIONS[index % REST_ROTATIONS.length];
+  const handleLeave = () => {
+    setHovering(false);
+    tiltRef.current = { x: 0, y: 0 };
+    scaleRef.current = 1;
+    stopSway();
+    if (cardRef.current) cardRef.current.style.transition = 'transform 0.6s ease-out';
+    applyTransform();
+  };
+
+  const aspectClass = ASPECT_CLASS[project.aspect ?? 'portrait'];
 
   return (
     <div
-      className="relative w-48 shrink-0 sm:w-56"
+      className="relative w-40 shrink-0 xs:w-44 sm:w-56"
       style={{ perspective: '1000px', marginTop: hangOffset }}
     >
       {/* soft mocha ambient glow sitting behind the card — no shape, just light */}
       <div
-        className={`pointer-events-none absolute -inset-8 rounded-full blur-3xl transition-opacity duration-500 ${
+        ref={glowRef}
+        className={`pointer-events-none absolute -inset-6 rounded-full blur-3xl transition-opacity duration-500 ${
           isDarkMode ? 'bg-[#78350F]/25' : 'bg-[#9A5B32]/20'
         } ${hovering ? 'opacity-100' : 'opacity-50'}`}
       />
@@ -451,23 +536,20 @@ const FloatingProjectCard: React.FC<{
         onClick={() => onOpen(project)}
         onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpen(project)}
         onMouseMove={handleMouseMove}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={resetTilt}
-        onTouchStart={() => setHovering(true)}
+        onMouseEnter={handleEnter}
+        onMouseLeave={handleLeave}
+        onTouchStart={handleEnter}
         onTouchMove={handleTouchMove}
-        onTouchEnd={resetTilt}
-        style={{
-          transform: `perspective(1000px) translate3d(${parallaxX}px, ${parallaxY}px, 0) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) rotateZ(${restRotation + swayAngle}deg) scale(${hovering ? 1.06 : 1})`,
-          transition: hovering ? 'transform 90ms linear' : 'transform 0.6s ease-out',
-          animation: `floatY 6s ease-in-out ${index * 0.45}s infinite`,
-        }}
-        className="relative z-10 aspect-[3/4] w-full cursor-pointer overflow-hidden will-change-transform"
+        onTouchEnd={handleLeave}
+        style={{ animation: `floatY 6s ease-in-out ${index * 0.45}s infinite` }}
+        className={`relative z-10 ${aspectClass} w-full cursor-pointer overflow-hidden will-change-transform`}
       >
         <ImagePlaceholder
           image={project.image}
           alt={project.title}
           isDarkMode={isDarkMode}
           rounded={false}
+          eager={index < 2}
           className={`h-full w-full ${
             isDarkMode ? 'shadow-[0_25px_60px_-20px_rgba(0,0,0,0.7)]' : 'shadow-[0_25px_60px_-20px_rgba(120,53,15,0.3)]'
           }`}
@@ -600,6 +682,7 @@ const FloatingProjectField: React.FC<{
 }> = ({ isDarkMode, onOpenProject }) => {
   const fieldRef = useRef<HTMLDivElement | null>(null);
   const [parallax, setParallax] = useState<Vec2>({ x: 0, y: 0 });
+  const isDesktop = useIsDesktop();
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const field = fieldRef.current;
@@ -618,7 +701,7 @@ const FloatingProjectField: React.FC<{
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{ perspective: '1500px' }}
-      className="relative flex min-h-[65vh] w-full flex-wrap items-center justify-center gap-8 px-6 py-20 lg:h-full lg:min-h-0 lg:gap-10"
+      className="relative flex min-h-[60vh] w-full flex-wrap items-center justify-center gap-6 px-6 py-12 sm:gap-8 sm:py-16 lg:h-full lg:min-h-0 lg:gap-10 lg:py-20"
     >
       {PROJECTS.map((project, index) => (
         <FloatingProjectCard
@@ -628,6 +711,7 @@ const FloatingProjectField: React.FC<{
           parallax={parallax}
           isDarkMode={isDarkMode}
           onOpen={onOpenProject}
+          compactHang={!isDesktop}
         />
       ))}
     </div>
