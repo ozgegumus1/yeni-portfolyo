@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
 /* ================================================================== */
 /*  Types                                                              */
@@ -719,6 +720,118 @@ const FloatingProjectField: React.FC<{
 };
 
 /* ================================================================== */
+/*  MOBİL-ÖZEL: telefon mockup'lı, scroll'da beliren proje kartları     */
+/*  Magic UI "Mobile" şablonundan esinlenildi. Masaüstü tarafına hiç   */
+/*  dokunmuyor — sadece lg breakpoint altında ProjectShowcase          */
+/*  tarafından devreye alınıyor.                                       */
+/* ================================================================== */
+
+const PhoneMockupCard: React.FC<{
+  project: Project;
+  index: number;
+  isDarkMode: boolean;
+  onOpen: (project: Project) => void;
+}> = ({ project, index, isDarkMode, onOpen }) => {
+  // Çift/tek index'e göre hafif zıt yönlerde eğim — asimetrik, "3D" bir his verir.
+  const tiltDir = index % 2 === 0 ? -1 : 1;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 64, rotateZ: tiltDir * 7, scale: 0.9 }}
+      whileInView={{ opacity: 1, y: 0, rotateZ: tiltDir * 2, scale: 1 }}
+      viewport={{ once: true, amount: 0.4 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      whileTap={{ scale: 0.96 }}
+      onClick={() => onOpen(project)}
+      role="button"
+      tabIndex={0}
+      aria-label={project.title}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onOpen(project)}
+      style={{ perspective: 1000 }}
+      className="relative mx-auto w-[220px] cursor-pointer select-none"
+    >
+      {/* soft ambient glow behind the phone — aynı taba/mocha palet */}
+      <div
+        className={`pointer-events-none absolute -inset-6 rounded-full blur-3xl ${
+          isDarkMode ? 'bg-[#78350F]/25' : 'bg-[#9A5B32]/20'
+        }`}
+      />
+
+      {/* Telefon çerçevesi (bezel) */}
+      <div
+        className={`relative rounded-[2.2rem] border-[6px] p-1.5 shadow-2xl ${
+          isDarkMode
+            ? 'border-zinc-800 bg-zinc-900 shadow-black/60'
+            : 'border-zinc-300 bg-zinc-100 shadow-[#78350F]/20'
+        }`}
+      >
+        {/* Dynamic Island / notch */}
+        <div
+          className={`absolute left-1/2 top-2.5 z-10 h-4 w-16 -translate-x-1/2 rounded-full ${
+            isDarkMode ? 'bg-zinc-950' : 'bg-zinc-900'
+          }`}
+        />
+
+        {/* Ekran — görsel tamamı görünsün diye object-contain kullanıyoruz (kırpma yok) */}
+        <div
+          className={`relative aspect-[9/19] w-full overflow-hidden rounded-[1.7rem] ${
+            isDarkMode ? 'bg-black' : 'bg-zinc-900'
+          }`}
+        >
+          {project.image ? (
+            <img
+              src={project.image}
+              alt={project.title}
+              loading="lazy"
+              decoding="async"
+              className="h-full w-full object-contain"
+            />
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center gap-2 px-4 text-center">
+              <span className="text-[11px] font-medium text-zinc-500">Görsel yakında</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const MobileProjectShowcase: React.FC<{
+  isDarkMode: boolean;
+  onOpenProject: (project: Project) => void;
+}> = ({ isDarkMode, onOpenProject }) => (
+  <div className="relative flex w-full flex-col items-center gap-20 px-6 py-16">
+    {PROJECTS.map((project, index) => (
+      <PhoneMockupCard
+        key={project.title}
+        project={project}
+        index={index}
+        isDarkMode={isDarkMode}
+        onOpen={onOpenProject}
+      />
+    ))}
+  </div>
+);
+
+/**
+ * Ekran genişliğine göre doğru gösterimi seçer:
+ * - Masaüstü (lg ve üstü): mevcut FloatingProjectField — TAMAMEN AYNI, dokunulmadı.
+ * - Mobil: yeni telefon-mockup'lı, Framer Motion ile scroll'da beliren gösterim.
+ */
+const ProjectShowcase: React.FC<{
+  isDarkMode: boolean;
+  onOpenProject: (project: Project) => void;
+}> = ({ isDarkMode, onOpenProject }) => {
+  const isDesktop = useIsDesktop();
+  return isDesktop ? (
+    <FloatingProjectField isDarkMode={isDarkMode} onOpenProject={onOpenProject} />
+  ) : (
+    <MobileProjectShowcase isDarkMode={isDarkMode} onOpenProject={onOpenProject} />
+  );
+};
+
+/* ================================================================== */
 /*  Page                                                                */
 /* ================================================================== */
 
@@ -831,7 +944,7 @@ const PortfolioPage: React.FC = () => {
         </div>
 
         {/* ---------- Right : free-floating, asymmetric, leaf-sway project cards ---------- */}
-        <FloatingProjectField isDarkMode={isDarkMode} onOpenProject={setSelectedProject} />
+        <ProjectShowcase isDarkMode={isDarkMode} onOpenProject={setSelectedProject} />
       </section>
 
       {/* ---------------------------------------------------------- */}
@@ -839,7 +952,7 @@ const PortfolioPage: React.FC = () => {
       {/* ---------------------------------------------------------- */}
       <footer className="relative px-6 py-8 text-center">
         <p className={`text-xs ${isDarkMode ? 'text-zinc-600' : 'text-zinc-400'}`}>
-          ©  2025 Özge Gümüş. Tüm hakları saklıdır.
+          © 2025 Özge Gümüş. Tüm hakları saklıdır.
         </p>
       </footer>
     </div>
